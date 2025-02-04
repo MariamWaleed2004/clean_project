@@ -1,9 +1,15 @@
 import 'package:clean/const.dart';
+import 'package:clean/features/domain/entities/user/user_entity.dart';
+import 'package:clean/features/presentation/cubit/auth/auth_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+
+  final UserEntity currentUser;
+
+  const ProfileScreen({super.key, required this.currentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: backGroundColor,
       appBar: AppBar(
       backgroundColor: backGroundColor,
-        title: Text('Username', style: TextStyle(color: primaryColor),),
+        title: Text('${currentUser.username}', style: TextStyle(color: primaryColor),),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
@@ -44,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       Column(
                         children: [
-                          Text('0', style: TextStyle(
+                          Text('${currentUser.totalPosts}', style: TextStyle(
                         color: primaryColor,
                         fontWeight: FontWeight.bold,
                        ),
@@ -57,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
                       sizeHor(25),
                        Column(
                         children: [
-                          Text('45', style: TextStyle(
+                          Text('${currentUser.totalFollowers}', style: TextStyle(
                         color: primaryColor,
                         fontWeight: FontWeight.bold,
                        ),
@@ -70,7 +76,7 @@ class ProfileScreen extends StatelessWidget {
                       sizeHor(25),
                       Column(
                         children: [
-                          Text('123', style: TextStyle(
+                          Text('${currentUser.totalFollowers}', style: TextStyle(
                         color: primaryColor,
                         fontWeight: FontWeight.bold,
                        ),
@@ -85,9 +91,9 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               sizeVer(10),   
-              Text('Name', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),), 
+              Text('${currentUser.name == "" ? currentUser.username : currentUser.name}', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),), 
               sizeVer(10),   
-              Text('The Bio of user', style: TextStyle(color: primaryColor,),),
+              Text('${currentUser.bio}', style: TextStyle(color: primaryColor,),),
               sizeVer(10),   
               GridView.builder(
                     itemCount: 33,
@@ -166,12 +172,18 @@ class ProfileScreen extends StatelessWidget {
                 sizeVer(5),
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    'Logout',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500, 
-                      fontSize: 16,
-                      color: primaryColor,
+                  child: InkWell(
+                    onTap: () {
+                      BlocProvider.of<AuthCubit>(context).loggedOut();
+                      Navigator.pushNamedAndRemoveUntil(context, ScreenConst.signInScreen, (route) => false);
+                    },
+                    child: Text(
+                      'Logout',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500, 
+                        fontSize: 16,
+                        color: primaryColor,
+                      ),
                     ),
                   ),
                   ),

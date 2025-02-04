@@ -23,7 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _bioController = TextEditingController();
 
-  bool _isSigningIn = false;
+  bool _isSigningUp = false;
 
   @override
   void dispose() {
@@ -61,7 +61,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             }
             return _bodyWidget();
           },
-        ));
+        )
+        );
   }
 
   _bodyWidget() {
@@ -135,6 +136,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
               _signUpUser();
             },
           ),
+            sizeVer(10),
+          _isSigningUp == true
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Please wait',
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    sizeHor(10),
+                    CircularProgressIndicator(),
+                  ],
+                )
+              : Container(
+                  width: 0,
+                  height: 0,
+                ),
           Flexible(
             child: Container(),
             flex: 2,
@@ -166,35 +188,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
               )
             ],
           ),
-          sizeVer(10),
-          _isSigningIn == true
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Please wait',
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    sizeHor(10),
-                    CircularProgressIndicator(),
-                  ],
-                )
-              : Container(
-                  width: 0,
-                  height: 0,
-                ),
+        
         ],
       ),
     );
   }
 
-  void _signUpUser() {
+  bool isValidEmail(String email) {
+  // Regular expression for validating an email
+  String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+  RegExp regExp = RegExp(pattern);
+  return regExp.hasMatch(email);
+}
+
+  void _signUpUser() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    toast("Email and password can't be empty");
+    return;
+  }
+  if (!isValidEmail(_emailController.text)) {
+    toast("Please enter a valid email");
+    return;
+  }
+  if (_passwordController.text.length < 6) {
+    toast("Password must be at least 6 characters");
+    return;
+  }
     setState(() {
-      _isSigningIn = true;
+      _isSigningUp = true;
     });
     BlocProvider.of<CredentialCubit>(context)
         .signUpUser(
@@ -223,7 +244,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _bioController.clear();
       _emailController.clear();
       _passwordController.clear();
-      _isSigningIn = false;
+      _isSigningUp = false;
     });
   }
 }
